@@ -9,7 +9,10 @@ video_url = input("Please enter video URL: ")
 start_time = util.seconds_elapsed(str(input("Please enter video start time as HH:MM:SS : ")))
 end_time = util.seconds_elapsed(str(input("Please enter video end time as HH:MM:SS : ")))
 interval = abs(int(input("Please enter interval between captured frames: ")))
-numeric_title = input("Would you like video to have numeric title? y/n") is "y"
+custom_title = input("Would you like video to have a custom title? y/n: ") == "y"
+
+if custom_title:
+    video_title = str(input("Please enter title for this video: "))
 
 if start_time >= end_time:
     raise Exception("Please ensure start is earlier than end time!")
@@ -22,19 +25,17 @@ try:
 except:
     raise Exception("There was an issue with grabbing the video from this URL!")
 
-print(f"Downloading video at URL: {video_url}")
+print(f"\n Downloading video at URL: {video_url}")
 
-if not numeric_title:
+if not custom_title:
     video_title = video.title
-else:
-    raise Exception("This is WIP") #todo: fix this
 
 filename = f"{video_title}.mp4"                     #file name of download
 stream_fps = stream.fps                             #fps of downloaded stream
 stream_res = stream.resolution
 
 stream.download('./tmp')                            #downloads video
-print("Done!")
+print("Done! \n")
 
 
 #extract frames:
@@ -56,20 +57,20 @@ time = 0
 timestep = interval / stream_fps
 ret = True
 
-while ret and time < end_time and time + timestep < end_time:
+while ret and time + timestep < end_time:
     try:
         time += 1/stream_fps
-        ret, frame = vid.read()                     # reading frame sequentially from video
+        ret, frame = vid.read()                     # reading frame sequentially from video #todo: frame is for some reason appearing as none here for some videos (maybe longer videos?). try this video: https://www.youtube.com/watch?v=nW9k5nH83MM
         currentframe += 1
 
-        if frame is None and currentframe == 0:
+        if frame is None and currentframe == 1:
             raise Exception()
 
     except:
         raise Exception("Error getting frame from video! Please ensure video title is not causing issues!")
 
 
-    if time >= start_time:
+    if time >= start_time and frame is not None:
         if util.is_divisible(currentframe - captured_at, interval):
             captured_at = currentframe
             file_name = f"{img_dir}/{video_title}_frame" + str(currentframe) + ".jpg"
