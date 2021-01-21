@@ -11,7 +11,7 @@ def seconds_elapsed(time_string):
     elif len(time_string.split(":")) == 1:
         return int(time_string)
     else:
-        raise Exception("Error! Inputted time could not be understood.")
+        raise ValueError("Inputted time could not be understood.")
 
     seconds = (time - zero_time).total_seconds()
     return seconds
