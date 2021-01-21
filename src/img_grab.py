@@ -6,10 +6,10 @@ from src import util
 
 # user inputs
 
-def get_data(video_url, start_time = None, end_time= None, interval = 1, custom_title = None):
+def get_data(video_url, start_time_seconds = None, end_time_seconds= None, interval = 1, custom_title = None):
 
-    if start_time is not None and end_time is not None:
-        if start_time >= end_time:
+    if start_time_seconds is not None and end_time_seconds is not None:
+        if start_time_seconds >= end_time_seconds:
             raise Exception("Please ensure start is earlier than end time!")
 
     # download video to tmp
@@ -54,20 +54,19 @@ def get_data(video_url, start_time = None, end_time= None, interval = 1, custom_
         print('Error creating directory of data!')
 
     # frame
-    captured_at = 0  # Stores last frame captured for comparison
-    current_frame = 0
-
     #sets start and end frames based on user input
-    if start_time is not None:
-        start_frame = start_time * stream_fps
+    if start_time_seconds is not None:
+        start_frame = start_time_seconds * stream_fps
     else:
         start_frame = 0
 
-    if end_time is not None:
-        end_frame = end_time * stream_fps
+    if end_time_seconds is not None:
+        end_frame = end_time_seconds * stream_fps
     else:
         end_frame = vid.get(cv2.CAP_PROP_FRAME_COUNT)
 
+    captured_at = start_frame  # Stores last frame captured for comparison
+    current_frame = 0
     ret = True
 
     #loops through video and extracts relecant frames

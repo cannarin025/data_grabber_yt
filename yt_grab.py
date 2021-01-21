@@ -14,11 +14,12 @@ parse = parser.parse_args()
 url = parse.url
 start_time = parse.start_time
 end_time = parse.end_time
-interval = parse.end_time
+interval = int(parse.interval)
 custom_title = parse.custom_title
 
 if start_time is not None:
     start_time = seconds_elapsed(start_time)
+
 if end_time is not None:
     end_time = seconds_elapsed(end_time)
 
