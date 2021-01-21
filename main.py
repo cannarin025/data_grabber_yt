@@ -9,6 +9,7 @@ video_url = input("Please enter video URL: ")
 start_time = util.seconds_elapsed(str(input("Please enter video start time as HH:MM:SS : ")))
 end_time = util.seconds_elapsed(str(input("Please enter video end time as HH:MM:SS : ")))
 interval = abs(int(input("Please enter interval between captured frames: ")))
+numeric_title = input("Would you like video to have numeric title? y/n") is "y"
 
 if start_time >= end_time:
     raise Exception("Please ensure start is earlier than end time!")
@@ -22,7 +23,12 @@ except:
     raise Exception("There was an issue with grabbing the video from this URL!")
 
 print(f"Downloading video at URL: {video_url}")
-video_title = video.title
+
+if not numeric_title:
+    video_title = video.title
+else:
+    raise Exception("This is WIP") #todo: fix this
+
 filename = f"{video_title}.mp4"                     #file name of download
 stream_fps = stream.fps                             #fps of downloaded stream
 stream_res = stream.resolution
@@ -32,6 +38,7 @@ print("Done!")
 
 
 #extract frames:
+print("Extracting frames")
 vid = cv2.VideoCapture(f"./tmp/{filename}")
 img_dir = f"img/{stream_res}/{video_title}"
 
@@ -40,7 +47,7 @@ try:
         os.makedirs(img_dir)
 
 except OSError:
-    print('Error: Creating directory of data')
+    print('Error creating directory of data!')
 
 # frame
 captured_at = 0
@@ -49,17 +56,17 @@ time = 0
 timestep = interval / stream_fps
 ret = True
 
-while ret and time < end_time and time + timestep <= end_time:
+while ret and time < end_time and time + timestep < end_time:
     try:
         time += 1/stream_fps
-        # reading from frame
-        ret, frame = vid.read()
+        ret, frame = vid.read()                     # reading frame sequentially from video
         currentframe += 1
 
+        if frame is None and currentframe == 0:
+            raise Exception()
 
     except:
-        print("Error getting frame from video! stopping here!")
-        break
+        raise Exception("Error getting frame from video! Please ensure video title is not causing issues!")
 
 
     if time >= start_time:
@@ -71,6 +78,8 @@ while ret and time < end_time and time + timestep <= end_time:
 # Release all space and windows once done
 vid.release()
 cv2.destroyAllWindows()
+
+print("Done!")
 
 #removes tmp
 folder = "./tmp"
