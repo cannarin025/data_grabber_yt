@@ -1,4 +1,4 @@
-=============================A script to grab video frames from youtube as ML training data=============================
+=============================A script to grab video frames from YouTube as ML training data=============================
 
 This is a simple script written to allow the user to easily capture training data for machine learning algorithms from
 YouTube videos as image frames. This was created as a tool to help gather data for an object detection algorithm for my
