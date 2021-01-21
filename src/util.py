@@ -1,13 +1,6 @@
 from decimal import Decimal
 from datetime import datetime
 
-#works out if any two numbers are divisible by each other
-def is_divisible(num, divisor):
-    a = Decimal(str(num))
-    b = Decimal(str(divisor))
-    c = a % b
-    return c.is_zero()
-
 #works out number of seconds elapsed since a time of 00:00:00
 def seconds_elapsed(time_string):
     zero_time = datetime.strptime("00:00:00", "%H:%M:%S")

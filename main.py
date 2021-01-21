@@ -4,7 +4,7 @@ import shutil
 import cv2
 from src import util
 
-#user inputs
+# user inputs
 video_url = input("Please enter video URL: ")
 start_time = util.seconds_elapsed(str(input("Please enter video start time as HH:MM:SS : ")))
 end_time = util.seconds_elapsed(str(input("Please enter video end time as HH:MM:SS : ")))
@@ -17,31 +17,31 @@ if custom_title:
 if start_time >= end_time:
     raise Exception("Please ensure start is earlier than end time!")
 
-#download video to tmp
+# download video to tmp
 try:
     video = YouTube(f"{video_url}")
-    stream = video.streams.filter(adaptive=True).filter(file_extension="mp4").first()
+    stream = video.streams.filter(adaptive=True).filter(file_extension="mp4").first()  # Get highest quality stream
 
 except:
     raise Exception("There was an issue with grabbing the video from this URL!")
 
-print(f"\n Downloading video at URL: {video_url}")
+print(f"\nDownloading video at URL: {video_url}")
 
 if not custom_title:
-    video_title = video.title
+    video_title = video.title  # Use YouTube title as download title
 
-filename = f"{video_title}.mp4"                     #file name of download
-stream_fps = stream.fps                             #fps of downloaded stream
+filename = f"{video_title}.mp4"  # File name of download
+stream_fps = stream.fps
 stream_res = stream.resolution
 
-stream.download('./tmp')                            #downloads video
+stream.download(output_path=f"./tmp")  # Downloads video to directory ./tmp
+os.rename(f"./tmp/{stream.default_filename}", f"./tmp/{video_title}.mp4")  # Rename video to custom user specified name
 print("Done! \n")
 
-
-#extract frames:
+# extract frames:
 print("Extracting frames")
 vid = cv2.VideoCapture(f"./tmp/{filename}")
-img_dir = f"img/{stream_res}/{video_title}"
+img_dir = f"img/{stream_res}/{video_title}"  # Directory to save frames at
 
 try:
     if not os.path.exists(img_dir):
@@ -51,30 +51,31 @@ except OSError:
     print('Error creating directory of data!')
 
 # frame
-captured_at = 0
-currentframe = 0
-time = 0
-timestep = interval / stream_fps
+captured_at = 0  # Stores last frame captured for comparison
+current_frame = 0
+start_frame = start_time * stream_fps
+end_frame = end_time * stream_fps
 ret = True
 
-while ret and time + timestep < end_time:
+while ret and current_frame <= end_frame:
     try:
-        time += 1/stream_fps
-        ret, frame = vid.read()                     # reading frame sequentially from video #todo: frame is for some reason appearing as none here for some videos (maybe longer videos?). try this video: https://www.youtube.com/watch?v=nW9k5nH83MM
-        currentframe += 1
-
-        if frame is None and currentframe == 1:
-            raise Exception()
+        ret, frame = vid.read()
 
     except:
-        raise Exception("Error getting frame from video! Please ensure video title is not causing issues!")
+        raise Exception("Error getting frame from video!")
 
+    if frame is None and current_frame == 0:
+        # Check to make sure a frame was captured at the start
+        raise Exception("Video frame was None! Please try using custom video name instead!")
 
-    if time >= start_time and frame is not None:
-        if util.is_divisible(currentframe - captured_at, interval):
-            captured_at = currentframe
-            file_name = f"{img_dir}/{video_title}_frame" + str(currentframe) + ".jpg"
+    if current_frame >= start_frame and frame is not None:
+        # Capture relevant frames
+        if current_frame - captured_at == interval or current_frame == captured_at:
+            captured_at = current_frame
+            file_name = f"{img_dir}/{video_title}_frame" + str(current_frame) + ".jpg"
             cv2.imwrite(file_name, frame)
+
+    current_frame += 1
 
 # Release all space and windows once done
 vid.release()
@@ -82,7 +83,7 @@ cv2.destroyAllWindows()
 
 print("Done!")
 
-#removes tmp
+# removes tmp
 folder = "./tmp"
 for filename in os.listdir(folder):
     file_path = os.path.join(folder, filename)
