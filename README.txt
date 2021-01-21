@@ -7,10 +7,15 @@ BSc Project detecting cane toads. It is intended for use in cases where manually
 Please pip install requirements.txt to begin.
 
 How to use:
-1. Supply a valid youtube URL to a video
-2. Input start time for frame capture as HH:MM:SS or MM:SS or seconds
-3. Input end time for frame capture as HH:MM:SS or MM:SS or seconds. Ensure this is later than the start.
-4. Specify interval at which frames are captured. i.e. an input of 5 means capture one frame in every 5.
+
+yt_grab.py <url> --start_time --end_time --interval --custom_name
+
+--start_time: Time for frame capture to start HH:MM:SS
+--end_time: Time for frame capture to end HH:MM:SS
+--interval: Frame interval between captured frames
+--custom_name: Custom file name video is saved with. Use if video title is causing problems.
+
+Note: Times can also be provided as MM:SS or just integer seconds
 
 Results:
 - Video will be downloaded into a directory /tmp

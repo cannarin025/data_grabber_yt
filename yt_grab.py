@@ -6,7 +6,7 @@ parser = ArgumentParser(description="Grabs video frames from YouTube video at sp
 parser.add_argument("url")
 parser.add_argument("--start_time", help="Time to start grabbing frames from HH:MM:SS")
 parser.add_argument("--end_time", help="Time to stop grabbing frames at HH:MM:SS")
-parser.add_argument("--interval", help="Interval between grabbed frames in frames")
+parser.add_argument("--interval", help="Frame interval between grabbed frames")
 parser.add_argument("--custom_title", help="Custom title for video download")
 
 parse = parser.parse_args()
