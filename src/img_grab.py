@@ -4,7 +4,22 @@ import shutil
 import cv2
 from src import util
 
-# user inputs
+def del_video():
+    # removes tmp
+    folder = "./tmp"
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+    os.removedirs("./tmp")
+
+
 
 def get_data(video_url, start_time_seconds = None, end_time_seconds= None, interval = 1, custom_title = None):
 
@@ -37,6 +52,7 @@ def get_data(video_url, start_time_seconds = None, end_time_seconds= None, inter
     try:
         os.rename(f"./tmp/{stream.default_filename}", f"./tmp/{video_title}.mp4")  # Rename video to custom user specified name
     except:
+        del_video()
         ValueError("File name error: Please try a custom file name!")
 
     print("Done! \n")
@@ -51,6 +67,7 @@ def get_data(video_url, start_time_seconds = None, end_time_seconds= None, inter
             os.makedirs(img_dir)
 
     except OSError:
+        del_video()
         print('Error creating directory of data!')
 
     # frame
@@ -75,10 +92,12 @@ def get_data(video_url, start_time_seconds = None, end_time_seconds= None, inter
             ret, frame = vid.read()
 
         except:
+            del_video()
             raise Exception("Error getting frame from video!")
 
         if frame is None and current_frame == 0:
             # Check to make sure a frame was captured at the start
+            del_video()
             raise Exception("Video frame was None! Please try using custom video name instead!")
 
         if current_frame >= start_frame and frame is not None:
@@ -96,16 +115,5 @@ def get_data(video_url, start_time_seconds = None, end_time_seconds= None, inter
 
     print("Done!")
 
-    # removes tmp
-    folder = "./tmp"
-    for filename in os.listdir(folder):
-        file_path = os.path.join(folder, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
+    del_video()
 
-    os.removedirs("./tmp")
