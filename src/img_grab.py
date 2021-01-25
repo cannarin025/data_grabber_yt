@@ -2,7 +2,6 @@ from pytube import YouTube
 import os
 import shutil
 import cv2
-from src import util
 
 def del_video():
     # removes tmp
